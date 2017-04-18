@@ -115,6 +115,7 @@ var BannerVars = []string{
 	"PDK_FUSION_PLATFORM_ZIP",
 	"PRODUCT_SOONG_NAMESPACES",
 	"WITH_GAPPS",
+	"TARGET_USE_SDCLANG",
 }
 
 func Banner(make_vars map[string]string) string {
