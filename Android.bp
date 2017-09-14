@@ -44,7 +44,7 @@ bootstrap_go_package {
         "blueprint-bootstrap",
         "soong",
         "soong-env",
-        "soong-aosp",
+        "soong-aosp-android",
     ],
     srcs: [
         "android/androidmk.go",
