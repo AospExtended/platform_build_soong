@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"strings"
 
-	"aosp/soong/android"
+	"aosp/soong/android_aosp"
 
 	"github.com/google/blueprint/proptools"
 )
@@ -89,7 +89,7 @@ type variableProperties struct {
 		}
 
 		// include AOSP variables
-		AOSP android.Product_variables
+		AOSP android_aosp.Product_variables
 	} `android:"arch_variant"`
 }
 
@@ -157,7 +157,7 @@ type productVariables struct {
 	Override_rs_driver *string `json:",omitempty"`
 
 	// include AOSP variables
-	AOSP android.ProductVariables
+	AOSP android_aosp.ProductVariables
 }
 
 func boolPtr(v bool) *bool {
