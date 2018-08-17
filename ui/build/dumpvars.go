@@ -126,6 +126,8 @@ var BannerVars = []string{
 	"PLATFORM_VERSION_CODENAME",
 	"PLATFORM_VERSION",
 	"CUSTOM_VERSION",
+	"EXTENDED_MOD_VERSION",
+	"EXTENDED_VERSION",
 	"TARGET_PRODUCT",
 	"TARGET_BUILD_VARIANT",
 	"TARGET_BUILD_TYPE",
@@ -155,9 +157,23 @@ var BannerVars = []string{
 func Banner(make_vars map[string]string) string {
 	b := &bytes.Buffer{}
 
+        fmt.Fprintln(b, "============================================")
+	fmt.Fprintln(b, "                                            ")
+	fmt.Fprintln(b, "          ▄▄▄      ▓█████ ▒██   ██▒         ")
+	fmt.Fprintln(b, "         ▒████▄    ▓█   ▀ ▒▒ █ █ ▒░         ")
+	fmt.Fprintln(b, "         ▒██  ▀█▄  ▒███   ░░  █   ░         ")
+	fmt.Fprintln(b, "         ░██▄▄▄▄██ ▒▓█  ▄  ░ █ █ ▒          ")
+	fmt.Fprintln(b, "          ▓█   ▓██▒░▒████▒▒██▒ ▒██▒         ")
+	fmt.Fprintln(b, "          ▒▒   ▓▒█░░░ ▒░ ░▒▒ ░ ░▓ ░         ")
+	fmt.Fprintln(b, "           ▒   ▒▒ ░ ░ ░  ░░░   ░▒ ░         ")
+	fmt.Fprintln(b, "           ░   ▒      ░    ░    ░           ")
+	fmt.Fprintln(b, "               ░  ░   ░  ░ ░    ░           ")
+	fmt.Fprintln(b, "                                            ")
+	fmt.Fprintf(b, "        AospExtended-%s %s %s\n", make_vars["EXTENDED_VERSION"], make_vars["PLATFORM_VERSION"], make_vars["TARGET_PLATFORM_VERSION"] )
+	fmt.Fprintln(b, "============================================")
 	fmt.Fprintln(b, "============================================")
 	for _, name := range BannerVars {
-		if make_vars[name] != "" {
+		if make_vars[name] != "" && name != "EXTENDED_VERSION" {
 			fmt.Fprintf(b, "%s=%s\n", name, make_vars[name])
 		}
 	}
