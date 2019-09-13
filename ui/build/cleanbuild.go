@@ -101,6 +101,7 @@ func installClean(ctx Context, config Config, what int) {
 		hostOut("vts"),
 		hostOut("vts10"),
 		hostOut("vts-core"),
+		productOut("*Changelog.txt"),
 		productOut("*.img"),
 		productOut("*.zip"),
 		productOut("*.zip.md5sum"),
