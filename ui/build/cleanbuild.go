@@ -96,6 +96,7 @@ func installClean(ctx Context, config Config, what int) {
 		hostOut("sdk_addon"),
 		hostOut("testcases"),
 		hostOut("vts"),
+		productOut("*Changelog.txt"),
 		productOut("*.img"),
 		productOut("*.zip"),
 		productOut("*.zip.md5sum"),
