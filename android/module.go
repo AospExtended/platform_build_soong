@@ -74,6 +74,7 @@ type androidBaseContext interface {
 	SocSpecific() bool
 	ProductSpecific() bool
 	ProductServicesSpecific() bool
+	ProductOverlaySpecific() bool
 	AConfig() Config
 	DeviceConfig() DeviceConfig
 }
@@ -259,6 +260,9 @@ type commonProperties struct {
 	// product_services partition does not exist).
 	Product_services_specific *bool
 
+	// When set to true, it is installed into  /product/vendor_overlay
+	Product_overlay_specific *bool
+
 	// Whether this module is installed to recovery partition
 	Recovery *bool
 
@@ -361,6 +365,7 @@ const (
 	socSpecificModule
 	productSpecificModule
 	productServicesSpecificModule
+	productOverlaySpecificModule
 )
 
 func (k moduleKind) String() string {
@@ -375,6 +380,8 @@ func (k moduleKind) String() string {
 		return "product-specific"
 	case productServicesSpecificModule:
 		return "productservices-specific"
+	case productOverlaySpecificModule:
+		return "productoverlay-specific"
 	default:
 		panic(fmt.Errorf("unknown module kind %d", k))
 	}
@@ -604,7 +611,7 @@ func (a *ModuleBase) DeviceSupported() bool {
 }
 
 func (a *ModuleBase) Platform() bool {
-	return !a.DeviceSpecific() && !a.SocSpecific() && !a.ProductSpecific() && !a.ProductServicesSpecific()
+	return !a.DeviceSpecific() && !a.SocSpecific() && !a.ProductSpecific() && !a.ProductServicesSpecific() && !a.ProductOverlaySpecific()
 }
 
 func (a *ModuleBase) DeviceSpecific() bool {
@@ -621,6 +628,10 @@ func (a *ModuleBase) ProductSpecific() bool {
 
 func (a *ModuleBase) ProductServicesSpecific() bool {
 	return Bool(a.commonProperties.Product_services_specific)
+}
+
+func (a *ModuleBase) ProductOverlaySpecific() bool {
+	return Bool(a.commonProperties.Product_overlay_specific)
 }
 
 func (a *ModuleBase) Enabled() bool {
@@ -746,6 +757,7 @@ func determineModuleKind(a *ModuleBase, ctx blueprint.BaseModuleContext) moduleK
 	var deviceSpecific = Bool(a.commonProperties.Device_specific)
 	var productSpecific = Bool(a.commonProperties.Product_specific)
 	var productServicesSpecific = Bool(a.commonProperties.Product_services_specific)
+	var productOverlaySpecific = Bool(a.commonProperties.Product_overlay_specific)
 
 	msg := "conflicting value set here"
 	if socSpecific && deviceSpecific {
@@ -761,12 +773,12 @@ func determineModuleKind(a *ModuleBase, ctx blueprint.BaseModuleContext) moduleK
 		}
 	}
 
-	if productSpecific && productServicesSpecific {
+	if productSpecific && (productServicesSpecific || productOverlaySpecific) {
 		ctx.PropertyErrorf("product_specific", "a module cannot be specific to product and product_services at the same time.")
 		ctx.PropertyErrorf("product_services_specific", msg)
 	}
 
-	if (socSpecific || deviceSpecific) && (productSpecific || productServicesSpecific) {
+	if (socSpecific || deviceSpecific) && (productSpecific || productServicesSpecific || productOverlaySpecific) {
 		if productSpecific {
 			ctx.PropertyErrorf("product_specific", "a module cannot be specific to SoC or device and product at the same time.")
 		} else {
@@ -791,6 +803,8 @@ func determineModuleKind(a *ModuleBase, ctx blueprint.BaseModuleContext) moduleK
 		return productSpecificModule
 	} else if productServicesSpecific {
 		return productServicesSpecificModule
+	} else if productOverlaySpecific {
+		return productOverlaySpecificModule
 	} else if deviceSpecific {
 		return deviceSpecificModule
 	} else if socSpecific {
@@ -1251,6 +1265,10 @@ func (a *androidBaseContextImpl) ProductServicesSpecific() bool {
 	return a.kind == productServicesSpecificModule
 }
 
+func (a *androidBaseContextImpl) ProductOverlaySpecific() bool {
+	return a.kind == productOverlaySpecificModule
+}
+
 // Makes this module a platform module, i.e. not specific to soc, device,
 // product, or product_services.
 func (a *ModuleBase) MakeAsPlatform() {
@@ -1259,6 +1277,7 @@ func (a *ModuleBase) MakeAsPlatform() {
 	a.commonProperties.Soc_specific = boolPtr(false)
 	a.commonProperties.Product_specific = boolPtr(false)
 	a.commonProperties.Product_services_specific = boolPtr(false)
+	a.commonProperties.Product_overlay_specific = boolPtr(false)
 }
 
 func (a *androidModuleContext) InstallInData() bool {
